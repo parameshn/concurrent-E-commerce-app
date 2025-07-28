@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import java.util.concurrent.ExecutionException;
+import org.springframework.transaction.annotation.Transactional;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -24,6 +25,7 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    
     @PostMapping
     public ResponseEntity<Order> createOrder(@RequestBody Order order) {
         try {
@@ -35,6 +37,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
+    @Transactional(readOnly = true)
     public ResponseEntity<Order> getOrder(@PathVariable Long id) {
         Optional<Order> order = orderService.getOrder(id);
         return order.map(ResponseEntity::ok)
