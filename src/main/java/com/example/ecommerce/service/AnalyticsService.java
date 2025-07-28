@@ -3,8 +3,7 @@ package com.example.ecommerce.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-
-
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.concurrent.*;
@@ -12,6 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.StampedLock;
 import java.util.stream.Collectors;
 
+@Service
 public class AnalyticsService {
 
    // @Autowired
