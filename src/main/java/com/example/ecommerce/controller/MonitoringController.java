@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.util.Map;
-
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/moniotring")
+@RequestMapping("/api/monitoring")
 public class MonitoringController {
 
     @Autowired
@@ -47,6 +47,16 @@ public class MonitoringController {
         return ResponseEntity.ok("Cached:" + key);
     }
 
+    @GetMapping("/cache/{key}")
+    public ResponseEntity<Optional<String>> getCacheEntry(@PathVariable String key) {
+        Optional<String> value = cacheService.get(key);
+        if (value != null) {
+            return ResponseEntity.ok(value);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping("/thread-info")
     public ResponseEntity<String> getThreadInfo() {
         ThreadMXBean threadBean = ManagementFactory.getThreadMXBean();
@@ -55,7 +65,7 @@ public class MonitoringController {
                 threadBean.getPeakThreadCount(),
                 threadBean.getTotalStartedThreadCount()));
     }
-    
+
     @GetMapping("/memory-info")
     public ResponseEntity<String> getMemoryInfo() {
         Runtime runtime = Runtime.getRuntime();
@@ -64,11 +74,10 @@ public class MonitoringController {
         long usedMemory = totalMemory - freeMemory;
 
         return ResponseEntity.ok(String.format("Total: %d MB, Used: %d MB, Free: %d MB, Max: %d MB",
-            totalMemory / (1024 * 1024),
-            usedMemory / (1024 * 1024),
-            freeMemory / (1024 * 1024),
+                totalMemory / (1024 * 1024),
+                usedMemory / (1024 * 1024),
+                freeMemory / (1024 * 1024),
                 runtime.maxMemory() / (1024 * 1024)));
     }
-
 
 }
