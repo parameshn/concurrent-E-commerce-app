@@ -130,7 +130,7 @@ public class CustomerService {
     }
 
     @Transactional
-    public boolean deletCustomer(Long id) {
+    public boolean deleteCustomer(Long id) {
         rwLock.writeLock().lock();
         try {
             Optional<Customer> customer = customerRepository.findById(id);
@@ -146,7 +146,7 @@ public class CustomerService {
         }
     }
     
-    public List<Customer> seatchCustomers(String searchTerm) {
+    public List<Customer> searchCustomers(String searchTerm) {
         return customerRepository.findByFirstNameContainingOrLastNameContaining(searchTerm, searchTerm);
 
     }
