@@ -1,0 +1,58 @@
+visual representation of how Spring handles ProductNotFoundException globally using @ControllerAdvice — without needing to define any handling logic inside the controller.
+
+
+User → PATCH /products/999
+        |
+        V
++-----------------------------+
+|      HTTP Thread            |
+| (http-nio-8080-exec-1)      |
++-----------------------------+
+        |
+        V
++-----------------------------+
+| Controller: updateProduct() |
++-----------------------------+
+        |
+        V
++-------------------------------+
+| Service: productService.updateProduct() |
++-------------------------------+
+        |
+        V
++--------------------------------------------+
+| Repository: productRepository.findById(999) |
+| → returns Optional.empty()                  |
++--------------------------------------------+
+        |
+        V
+Throws ProductNotFoundException
+        |
+        V
+Spring looks for a handler...
+        |
+        V
++----------------------------------------------+
+| @RestControllerAdvice (GlobalExceptionHandler)|
+| @ExceptionHandler(ProductNotFoundException)   |
+| → Returns ResponseEntity with 404 + message   |
++----------------------------------------------+
+        |
+        V
+Spring sends 404 Not Found response to the client
+
+| Layer                 | Action                                                  |
+| --------------------- | ------------------------------------------------------- |
+| Controller            | Calls service method, expects a result                  |
+| Service               | Throws `ProductNotFoundException` if ID not found       |
+| ControllerAdvice      | Catches the exception automatically                     |
+| Spring MVC Dispatcher | Uses the exception handler's response as final response |
+| Client                | Receives HTTP 404 Not Found                             |
+
+
+What You DON'T Need to Do:
+❌ No try-catch block in your controller
+
+❌ No manual check for Optional.isPresent() in controller
+
+❌ No duplication of error handling logic
