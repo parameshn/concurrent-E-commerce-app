@@ -16,8 +16,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id",nullable = false)
+    
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     @Column(name = "order_date",nullable = false)
@@ -29,6 +30,7 @@ public class Order {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
+    // JPA will store the enum constant name as a String in the database.
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -48,6 +50,9 @@ public class Order {
     @PrePersist
     public void prePersist() {
         LocalDateTime now = LocalDateTime.now();
+        if (this.orderDate == null) {
+            this.orderDate = now;
+        }
         this.createdAt = now;
         this.updatedAt = now;
     }
